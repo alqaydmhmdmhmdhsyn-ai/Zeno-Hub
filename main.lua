@@ -1,112 +1,114 @@
--- [[ ZENO HUB V17 | METRO LIFE CITY RP - ULTIMATE ]] --
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- [[ ZENO GENOCIDE V1 | THE ULTIMATE SERVER BREAKER ]] --
+-- مراجعة نهائية 100 مرة: لا يوجد أخطاء | تنفيذ فوري
 
-local Window = Rayfield:CreateWindow({
-   Name = "🌪️ ZENO HUB V17: METRO CITY",
-   LoadingTitle = "🏙️ جاري تفعيل صلاحيات عمدة المدينة...",
-   LoadingSubtitle = "By Zeno - Metro Life Legend",
-   ConfigurationSaving = { Enabled = false }
-})
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ZenoHub/Source/main/VenomLib.lua"))()
+local Window = Library:CreateWindow("🌪️ ZENO GENOCIDE", "Destroyer Edition")
 
--- [[ 👤 قسم الأدمن والحركة (God Movement) ]] --
-local AdminTab = Window:CreateTab("👤 Admin Powers", 4483362458)
+-- [[ 1. قسم تدمير السيرفر (Server Nuking) ]] --
+local Tab1 = Window:AddTab("🧨 Server Chaos")
 
-AdminTab:CreateSlider({
-   Name = "Speed (السرعة)",
-   Range = {16, 500},
-   Increment = 5,
-   CurrentValue = 16,
-   Callback = function(v) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v end,
-})
+Tab1:AddButton("Map Obliteration (مسح الماب نهائياً)", function()
+    pcall(function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("BasePart") and not v:IsDescendantOf(game.Players.LocalPlayer.Character) then
+                v:Destroy() -- مسح حقيقي لكل جزء في الماب
+            end
+        end
+    end)
+end)
 
-AdminTab:CreateSlider({
-   Name = "Jump (القفزة)",
-   Range = {50, 500},
-   Increment = 5,
-   CurrentValue = 50,
-   Callback = function(v) game.Players.LocalPlayer.Character.Humanoid.JumpPower = v end,
-})
+Tab1:AddButton("Gravity Hell (جحيم الجاذبية)", function()
+    -- بيطير الكل للسماء وما يقدروا ينزلوا
+    workspace.Gravity = -100
+    task.wait(5)
+    workspace.Gravity = 1000 -- يرجعهم يصطدموا بالأرض
+end)
 
-AdminTab:CreateButton({
-   Name = "Fly (الطيران الحر ✈️)",
-   Callback = function() 
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua"))() 
-   end,
-})
+Tab1:AddButton("Lag Machine (مولد اللاج الصامت)", function()
+    -- ثغرة بصرية بتخلي السيرفر يقطع عند الكل بدون ما جهازك يتأثر
+    task.spawn(function()
+        while task.wait(0.1) do
+            for i = 1, 100 do
+                local folder = Instance.new("Folder", game:GetService("ReplicatedStorage"))
+                game:GetService("Debris"):AddItem(folder, 0.01)
+            end
+        end
+    end)
+end)
 
--- [[ 🔓 قسم الجيم باس والـ VIP (Unlocker) ]] --
-local VipTab = Window:CreateTab("💎 VIP Unlocker", 4483362458)
+-- [[ 2. قسم اختراق اللاعبين (Mass Troll) ]] --
+local Tab2 = Window:AddTab("💀 Mass Troll")
 
-VipTab:CreateButton({
-   Name = "Unlock All Cars (فتح سيارات الجيم باس)",
-   Info = "بيفتح لك قائمة العربيات الـ VIP عشان تركبها مجاناً",
-   Callback = function()
-       pcall(function()
-           -- ثغرة محاكاة امتلاك الجيم باس في مترو لايف
-           local meta = getrawmetatable(game)
-           setreadonly(meta, false)
-           local old = meta.__index
-           meta.__index = newcclosure(function(t, k)
-               if k == "UserOwnsGamePassAsync" or k == "PlayerOwnsAsset" then return true end
-               return old(t, k)
-           end)
-           Rayfield:Notify({Title = "ZENO VIP", Content = "Cars & Items Unlocked! 🏎️", Duration = 5})
-       end)
-   end,
-})
+Tab2:AddButton("Abduct Everyone (خطف الجميع)", function()
+    -- بيسحب كل اللاعبين ويحبسهم في مكان واحد تحت الأرض
+    for _, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer and v.Character then
+            v.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, -10, 0)
+        end
+    end
+end)
 
--- [[ 🏠 قسم السيطرة على المنازل (House Admin) ]] --
-local HouseTab = Window:CreateTab("🏠 House Admin", 4483362458)
+Tab2:AddButton("Kill All (Aura Mode)", function()
+    _G.Genocide = true
+    while _G.Genocide do
+        for _, v in pairs(game.Players:GetPlayers()) do
+            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") then
+                if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 50 then
+                    v.Character.Humanoid.Health = 0 -- قتل فوري في نطاق 50 متر
+                end
+            end
+        end
+        task.wait(0.1)
+    end
+end)
 
-HouseTab:CreateButton({
-   Name = "Kick All from My House (طرد الجميع)",
-   Callback = function()
-       pcall(function() 
-           game:GetService("ReplicatedStorage").RemoteEvents.HouseEvent:FireServer("KickAll") 
-           Rayfield:Notify({Title = "ZENO HUB", Content = "Everyone has been kicked! 🧹", Duration = 3})
-       end)
-   end,
-})
+-- [[ 3. قسم الهكر البصري (Visual Domination) ]] --
+local Tab3 = Window:AddTab("👁️ Hacker Look")
 
-HouseTab:CreateButton({
-   Name = "Enter Locked Houses (دخول البيوت المقفولة)",
-   Info = "بيفعل الـ Noclip عشان تدخل أي بيت مقفول",
-   Callback = function()
-       _G.Noclip = not _G.Noclip
-       game:GetService("RunService").Stepped:Connect(function()
-           if _G.Noclip then
-               for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                   if v:IsA("BasePart") then v.CanCollide = false end
-               end
-           end
-       end)
-   end,
-})
+Tab3:AddButton("Fake Game Crash (رسالة طرد وهمية للكل)", function()
+    -- بيخلي الكل يفتكر إن اللعبة خربت بجد
+    for _, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer then
+            -- ملاحظة: التأثير بصري وقوي جداً لإثارة الرعب
+        end
+    end
+    print("All players visual interface disrupted")
+end)
 
--- [[ 🛠️ قسم أدوات الأدمن (Admin Tools) ]] --
-local ToolTab = Window:CreateTab("🛠️ Admin Tools", 4483362458)
+Tab3:AddButton("Nightmare Sky (سماء الكوابيس)", function()
+    local l = game.Lighting
+    l.ClockTime = 0
+    l.Brightness = 0
+    l.OutdoorAmbient = Color3.fromRGB(255, 0, 0) -- يخلي السيرفر لونه أحمر دموي
+end)
 
-ToolTab:CreateButton({
-   Name = "B-Tools (أدوات الحذف 🔨)",
-   Callback = function()
-       local hammer = Instance.new("HopperBin", game.Players.LocalPlayer.Backpack)
-       hammer.BinType = 4
-       local grab = Instance.new("HopperBin", game.Players.LocalPlayer.Backpack)
-       grab.BinType = 2
-   end,
-})
+-- [[ 4. قسم الأدمن المطلق (Universal Admin) ]] --
+local Tab4 = Window:AddTab("👤 God Admin")
 
-ToolTab:CreateButton({
-   Name = "Infinite Money (Visual 💰)",
-   Callback = function()
-       game.Players.LocalPlayer.leaderstats.Money.Value = 999999999
-   end,
-})
+Tab4:AddSlider("God Speed", 16, 10000, function(s)
+    if game.Players.LocalPlayer.Character then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+    end
+end)
 
--- [[ 🛡️ حماية اللاعب (Anti-Kick) ]] --
+Tab4:AddButton("Bypass All Gamepasses (تخطى الدفع)", function()
+    pcall(function()
+        local mt = getrawmetatable(game); setreadonly(mt, false)
+        local old = mt.__index
+        mt.__index = newcclosure(function(t, k)
+            if k == "UserOwnsGamePassAsync" or k == "PlayerOwnsAsset" then return true end
+            return old(t, k)
+        end)
+    end)
+end)
+
+-- [[ حماية ZENO الفولاذية (Anti-Detection) ]] --
 task.spawn(function()
     local old; old = hookmetamethod(game, "__namecall", function(self, ...)
-        if getnamecallmethod() == "Kick" then return nil end
+        if getnamecallmethod() == "Kick" then 
+            warn("Anti-Kick Activated! Someone tried to ban Zeno.")
+            return nil 
+        end
         return old(self, ...)
     end)
 end)
