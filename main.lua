@@ -1,74 +1,123 @@
--- [[ ZENO ELITE ADMIN | THE YOUTUBE POWER ]] --
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-local Window = OrionLib:MakeWindow({Name = "🌪️ ZENO ELITE ADMIN", HidePremium = false, SaveConfig = false, IntroText = "Zeno Is Dominating..."})
+-- [[ ZENO GENOCIDE FINAL | INTERNAL BYPASS SYSTEM ]] --
+-- النسخة النهائية الشاملة (تخريب + أدمن + سرقة + طيران)
 
--- [[ 👤 قسم القوة المطلقة (Main Admin) ]] --
-local Tab1 = Window:MakeTab({Name = "👤 Admin Power", Icon = "rbxassetid://4483345998"})
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local TabContainer = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
+local Title = Instance.new("TextLabel")
 
-Tab1:AddSlider({
-	Name = "WalkSpeed (السرعة الخارقة)",
-	Min = 16, Max = 1000, Default = 16,
-	Callback = function(v) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v end    
-})
+-- إعداد النظام الأساسي
+ScreenGui.Parent = game:GetService("CoreGui")
+MainFrame.Name = "ZenoUltimate"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+MainFrame.Position = UDim2.new(0.5, -110, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 220, 0, 350)
+MainFrame.Active = true
+MainFrame.Draggable = true
 
-Tab1:AddButton({
-	Name = "Infinite Yield (أوامر الـ CMD الكاملة)",
-	Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end
-})
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
+Title.Text = "🌪️ ZENO GENOCIDE V20"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.SourceSansBold
 
-Tab1:AddButton({
-	Name = "Fly V3 (الطيران بعداد)",
-	Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua"))() end
-})
+TabContainer.Parent = MainFrame
+TabContainer.Size = UDim2.new(1, -10, 1, -50)
+TabContainer.Position = UDim2.new(0, 5, 0, 45)
+TabContainer.BackgroundTransparency = 1
+TabContainer.CanvasSize = UDim2.new(0, 0, 2, 0) -- للسكرول
+TabContainer.ScrollBarThickness = 4
 
--- [[ 🧨 قسم التخريب (Sabotage) ]] --
-local Tab2 = Window:MakeTab({Name = "🧨 Sabotage", Icon = "rbxassetid://4483345998"})
+UIListLayout.Parent = TabContainer
+UIListLayout.Padding = UDim.new(0, 5)
+UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-Tab2:AddButton({
-	Name = "Mass Kick (طرد وهمي/إزعاج)",
-	Callback = function()
-        for i,v in pairs(game.Players:GetPlayers()) do
-            if v ~= game.Players.LocalPlayer then
-                print("Targeting: "..v.Name) -- محاكاة الاستهداف
+-- [[ وظيفة صنع الأزرار بسرعة ]] --
+local function CreateButton(txt, color, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = TabContainer
+    btn.Size = UDim2.new(0.9, 0, 0, 35)
+    btn.BackgroundColor3 = color
+    btn.Text = txt
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 14
+    btn.MouseButton1Click:Connect(callback)
+    
+    -- تأثير زوايا مستديرة
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+end
+
+-- [[ 🧨 قسم التخريب والدمار ]] --
+CreateButton("Delete Map (تخريب الماب)", Color3.fromRGB(150, 0, 0), function()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsDescendantOf(game.Players.LocalPlayer.Character) then
+            v:Destroy()
+        end
+    end
+end)
+
+CreateButton("Gravity 0 (انعدام الجاذبية)", Color3.fromRGB(100, 0, 0), function()
+    workspace.Gravity = 0
+end)
+
+CreateButton("Lag Server (قنبلة اللاج)", Color3.fromRGB(80, 0, 0), function()
+    task.spawn(function() while task.wait(0.1) do for i=1,100 do Instance.new("RemoteEvent", game.ReplicatedStorage).Name = "Zeno" end end end)
+end)
+
+-- [[ 👤 قسم الأدمن والهكر ]] --
+CreateButton("Speed 500 (سرعة صاروخ)", Color3.fromRGB(0, 100, 0), function()
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 500
+end)
+
+CreateButton("Infinite Yield (أدمن CMD)", Color3.fromRGB(0, 80, 150), function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)
+
+CreateButton("Fly GUI (قائمة الطيران)", Color3.fromRGB(0, 120, 120), function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua"))()
+end)
+
+-- [[ 🏙️ قسم المابات (Brookhaven/Metro) ]] --
+CreateButton("Unlock VIP (فتح الجيم باس)", Color3.fromRGB(150, 150, 0), function()
+    local mt = getrawmetatable(game); setreadonly(mt, false)
+    local old = mt.__index
+    mt.__index = newcclosure(function(t, k)
+        if k == "UserOwnsGamePassAsync" or k == "PlayerOwnsAsset" then return true end
+        return old(t, k)
+    end)
+end)
+
+CreateButton("Noclip (اختراق الجدران)", Color3.fromRGB(100, 100, 100), function()
+    _G.noclip = true
+    game:GetService("RunService").Stepped:Connect(function()
+        if _G.noclip then
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then v.CanCollide = false end
             end
         end
-        OrionLib:MakeNotification({Name = "ZENO", Content = "Attempting Server Disruption...", Duration = 5})
-    end
-})
+    end)
+end)
 
-Tab2:AddButton({
-	Name = "Clear Workspace (حذف الماب)",
-	Callback = function()
-        for _,v in pairs(workspace:GetChildren()) do
-            if v:IsA("Part") or v:IsA("Model") then v:Destroy() end
-        end
-    end
-})
+CreateButton("Nightmare Sky (سماء حمراء)", Color3.fromRGB(50, 0, 0), function()
+    game.Lighting.ClockTime = 0
+    game.Lighting.OutdoorAmbient = Color3.fromRGB(255, 0, 0)
+end)
 
--- [[ 🏙️ قسم مترو لايف مخصص (Metro City) ]] --
-local Tab3 = Window:MakeTab({Name = "🏙️ Metro Life", Icon = "rbxassetid://4483345998"})
+-- [[ 🛑 زر الإغلاق ]] --
+CreateButton("CLOSE HUB (إغلاق)", Color3.fromRGB(50, 50, 50), function()
+    ScreenGui:Destroy()
+end)
 
-Tab3:AddButton({
-	Name = "Unlock All Cars (فتح العربيات)",
-	Callback = function()
-        local mt = getrawmetatable(game); setreadonly(mt, false)
-        local old = mt.__index
-        mt.__index = newcclosure(function(t, k)
-            if k == "UserOwnsGamePassAsync" or k == "PlayerOwnsAsset" then return true end
-            return old(t, k)
-        end)
-    end
-})
-
-Tab3:AddButton({
-    Name = "Rob All Register (سرقة الخزنات)",
-    Callback = function()
-        OrionLib:MakeNotification({Name = "Zeno Hub", Content = "Teleporting to registers...", Duration = 3})
-        -- كود الانتقام/السرقة
-    end
-})
-
--- [[ 🛡️ نظام الحماية (Anti-Ban) ]] --
+-- [[ حماية ضد الطرد ]] --
 pcall(function()
     local old; old = hookmetamethod(game, "__namecall", function(self, ...)
         if getnamecallmethod() == "Kick" then return nil end
@@ -76,4 +125,4 @@ pcall(function()
     end)
 end)
 
-OrionLib:Init()
+print("ZENO GENOCIDE V20 LOADED SUCCESSFULLY")
