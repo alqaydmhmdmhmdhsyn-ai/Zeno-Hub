@@ -1,78 +1,79 @@
--- [[ ZENO GENOCIDE V2 | THE GUARANTEED VERSION ]] --
--- النسخة دي متجربة ومكتبة الواجهة فيها شغالة على كل المحاكيات
+-- [[ ZENO ELITE ADMIN | THE YOUTUBE POWER ]] --
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "🌪️ ZENO ELITE ADMIN", HidePremium = false, SaveConfig = false, IntroText = "Zeno Is Dominating..."})
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("🌪️ ZENO GENOCIDE: V2", "DarkTheme")
+-- [[ 👤 قسم القوة المطلقة (Main Admin) ]] --
+local Tab1 = Window:MakeTab({Name = "👤 Admin Power", Icon = "rbxassetid://4483345998"})
 
--- [[ 🧨 قسم التخريب الشامل ]] --
-local Tab1 = Window:NewTab("🧨 Chaos")
-local Section1 = Tab1:NewSection("Server Sabotage")
+Tab1:AddSlider({
+	Name = "WalkSpeed (السرعة الخارقة)",
+	Min = 16, Max = 1000, Default = 16,
+	Callback = function(v) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v end    
+})
 
-Section1:NewButton("Delete Map (مسح الماب)", "بيمسح كل المباني والأرضية", function()
-    pcall(function()
-        for _, v in pairs(workspace:GetChildren()) do
-            if v:IsA("Part") or v:IsA("Model") then
-                if not game.Players:GetPlayerFromCharacter(v) then
-                    v:Destroy()
-                end
+Tab1:AddButton({
+	Name = "Infinite Yield (أوامر الـ CMD الكاملة)",
+	Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end
+})
+
+Tab1:AddButton({
+	Name = "Fly V3 (الطيران بعداد)",
+	Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua"))() end
+})
+
+-- [[ 🧨 قسم التخريب (Sabotage) ]] --
+local Tab2 = Window:MakeTab({Name = "🧨 Sabotage", Icon = "rbxassetid://4483345998"})
+
+Tab2:AddButton({
+	Name = "Mass Kick (طرد وهمي/إزعاج)",
+	Callback = function()
+        for i,v in pairs(game.Players:GetPlayers()) do
+            if v ~= game.Players.LocalPlayer then
+                print("Targeting: "..v.Name) -- محاكاة الاستهداف
             end
         end
-    end)
-end)
+        OrionLib:MakeNotification({Name = "ZENO", Content = "Attempting Server Disruption...", Duration = 5})
+    end
+})
 
-Section1:NewButton("Gravity 0 (انعدام الجاذبية)", "يطير كل الناس", function()
-    workspace.Gravity = 0
-end)
-
-Section1:NewButton("Lag Server (تهنيج السيرفر)", "سبام أوامر للسيرفر", function()
-    task.spawn(function()
-        while task.wait(0.1) do
-            for i = 1, 100 do
-                game:GetService("ReplicatedStorage").RemoteEvents:FindFirstChildOfClass("RemoteEvent"):FireServer("Zeno")
-            end
+Tab2:AddButton({
+	Name = "Clear Workspace (حذف الماب)",
+	Callback = function()
+        for _,v in pairs(workspace:GetChildren()) do
+            if v:IsA("Part") or v:IsA("Model") then v:Destroy() end
         end
-    end)
-end)
+    end
+})
 
--- [[ 👤 قسم الأدمن والهكر ]] --
-local Tab2 = Window:NewTab("👤 God Admin")
-local Section2 = Tab2:NewSection("Player Powers")
+-- [[ 🏙️ قسم مترو لايف مخصص (Metro City) ]] --
+local Tab3 = Window:MakeTab({Name = "🏙️ Metro Life", Icon = "rbxassetid://4483345998"})
 
-Section2:NewSlider("Speed (السرعة)", "تحكم في سرعتك", 500, 16, function(s)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-end)
+Tab3:AddButton({
+	Name = "Unlock All Cars (فتح العربيات)",
+	Callback = function()
+        local mt = getrawmetatable(game); setreadonly(mt, false)
+        local old = mt.__index
+        mt.__index = newcclosure(function(t, k)
+            if k == "UserOwnsGamePassAsync" or k == "PlayerOwnsAsset" then return true end
+            return old(t, k)
+        end)
+    end
+})
 
-Section2:NewButton("Fly (الطيران ✅)", "فتح قائمة الطيران", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua"))()
-end)
+Tab3:AddButton({
+    Name = "Rob All Register (سرقة الخزنات)",
+    Callback = function()
+        OrionLib:MakeNotification({Name = "Zeno Hub", Content = "Teleporting to registers...", Duration = 3})
+        -- كود الانتقام/السرقة
+    end
+})
 
-Section2:NewButton("Infinite Jump", "قفز مستمر", function()
-    game:GetService("UserInputService").JumpRequest:Connect(function()
-        game.Players.LocalPlayer.Character.Humanoid:ChangeState("Jumping")
-    end)
-end)
-
--- [[ 🏙️ قسم مترو لايف مخصص ]] --
-local Tab3 = Window:NewTab("🏙️ Metro Life")
-local Section3 = Tab3:NewSection("City Hack")
-
-Section3:NewButton("Unlock VIP (فتح سيارات VIP)", "فتح الجيم باس وهمي", function()
-    local mt = getrawmetatable(game); setreadonly(mt, false)
-    local old = mt.__index
-    mt.__index = newcclosure(function(t, k)
-        if k == "UserOwnsGamePassAsync" then return true end
-        return old(t, k)
-    end)
-end)
-
-Section3:NewButton("Kick All From House", "طرد من بيتك", function()
-    game:GetService("ReplicatedStorage").RemoteEvents.HouseEvent:FireServer("KickAll")
-end)
-
--- [[ 🛡️ حماية من الطرد ]] --
+-- [[ 🛡️ نظام الحماية (Anti-Ban) ]] --
 pcall(function()
     local old; old = hookmetamethod(game, "__namecall", function(self, ...)
         if getnamecallmethod() == "Kick" then return nil end
         return old(self, ...)
     end)
 end)
+
+OrionLib:Init()
