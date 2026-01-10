@@ -1,273 +1,272 @@
--- [[ ZENO HUB | RELOADED & FIXED V12 ]] --
--- تم الإصلاح الكامل: إزالة الأخطاء، تحسين الـ Replication ليكون التغييرات مرئية للجميع، إضافة Bypass أقوى، وإصلاح الميزات التي كانت تبدو تعمل محلياً فقط.
--- ملاحظة: هذا السكريبت يعتمد على Executor قوي مثل Synapse أو Fluxus ليعمل بشكل صحيح، لأن بعض الميزات تحتاج إلى Server-Side Manipulation عبر Client.
--- إذا كان هناك أخطاء، تأكد من أن Rayfield يتم تحميله بشكل صحيح وأن اللعبة تدعم الـ Exploits.
+-- [[ ZENO HUB | LEGENDARY FLUENT EDITION - V12 ]]
+-- Anti-Kick + Stealth + All features replicated as much as possible
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
-local Window = Rayfield:CreateWindow({
-   Name = "🌪️ ZENO HUB: V12 FIXED",
-   LoadingTitle = "Bypassing Server Security... Please Wait",
-   ConfigurationSaving = { Enabled = false }
+local Window = Fluent:CreateWindow({
+    Title = "🌪️ ZENO HUB | LEGENDARY",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- [[ 🛡️ نظام حماية خارق - Anti-Kick & Stealth (محسن) ]] --
+local Tabs = {}
+Tabs.Targets = Window:AddTab({ Title = "🎯 Targets", Icon = "crosshair" })
+Tabs.Mirror = Window:AddTab({ Title = "🎭 Mirror", Icon = "copy" })
+Tabs.Kill = Window:AddTab({ Title = "💀 Kill", Icon = "skull" })
+Tabs.Houses = Window:AddTab({ Title = "🏠 Houses", Icon = "home" })
+Tabs.Seize = Window:AddTab({ Title = "🔗 Seize", Icon = "link" })
+Tabs.Movement = Window:AddTab({ Title = "⚡ Movement", Icon = "zap" })
+Tabs.Steal = Window:AddTab({ Title = "🚀 Instant Steal", Icon = "download" })
+Tabs.Fixes = Window:AddTab({ Title = "🛠️ Fixes", Icon = "wrench" })
+
+-- [[ Anti-Kick & Stealth ]]
 local function SecureBypass()
     local mt = getrawmetatable(game)
-    local oldIndex = mt.__index
-    local oldNamecall = mt.__namecall
     setreadonly(mt, false)
-    
+    local oldNamecall = mt.__namecall
     mt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
         if method == "Kick" or method == "kick" or method == "Ban" then
-            return nil -- يمنع الطرد تماماً
+            return nil
         end
         return oldNamecall(self, ...)
     end)
-    
-    mt.__index = newcclosure(function(self, key)
-        if key == "WalkSpeed" or key == "JumpPower" then
-            return oldIndex(self, key) -- يمنع الكشف عن التعديلات
-        end
-        return oldIndex(self, key)
-    end)
-    
     setreadonly(mt, true)
 end
 SecureBypass()
 
--- [[ 🎯 القائمة الرئيسية للاعبين (محسنة مع Auto-Refresh) ]] --
-local MainTab = Window:CreateTab("🎯 Targets", 4483345998)
+-- [[ Targets Section ]]
 local SelectedTarget = ""
 
-local function GetPlayers()
-    local p = {}
-    for _, v in pairs(game.Players:GetPlayers()) do
-        if v ~= game.Players.LocalPlayer then
-            table.insert(p, v.Name)
+local PlayerDropdown
+PlayerDropdown = Tabs.Targets:AddDropdown("TargetPlayer", {
+    Title = "Select Target",
+    Values = {},
+    Multi = false,
+    Default = 1,
+    Callback = function(Value)
+        SelectedTarget = Value
+    end
+})
+
+local function RefreshPlayers()
+    local players = {}
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= game.Players.LocalPlayer then
+            table.insert(players, p.Name)
         end
     end
-    return p
+    PlayerDropdown:SetValues(players)
+    if #players > 0 and SelectedTarget == "" then
+        SelectedTarget = players[1]
+        PlayerDropdown:SetValue(players[1])
+    end
 end
 
-local PlayerDrop = MainTab:CreateDropdown({
-   Name = "Target Player",
-   Options = GetPlayers(),
-   CurrentOption = {""},
-   Callback = function(Option)
-       SelectedTarget = Option[1]
-   end,
+Tabs.Targets:AddButton({
+    Title = "Refresh Players",
+    Callback = RefreshPlayers
 })
 
-MainTab:CreateButton({
-   Name = "Refresh Players",
-   Callback = function()
-       PlayerDrop:Refresh(GetPlayers())
-   end
-})
-
--- Auto-Refresh كل 10 ثواني لتجنب الأخطاء في اللاعبين الجدد
-spawn(function()
+-- Auto Refresh every 8 seconds
+task.spawn(function()
     while true do
-        wait(10)
-        PlayerDrop:Refresh(GetPlayers())
+        RefreshPlayers()
+        task.wait(8)
     end
 end)
 
--- [[ 🎭 ميزة نسخ الشكل الحقيقية (FIXED مع Replication) ]] --
-local MirrorTab = Window:CreateTab("🎭 Mirror", 4483345998)
-MirrorTab:CreateButton({
-   Name = "Mirror Appearance (نسخ كامل)",
-   Callback = function()
-       local target = game.Players:FindFirstChild(SelectedTarget)
-       if target and game.Players.LocalPlayer.Character then
-           local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-           local desc = game.Players:GetHumanoidDescriptionFromUserId(target.UserId)
-           if hum and desc then
-               hum:ApplyDescription(desc)
-               -- إضافة Replication: إعادة تحميل الشخصية لتكون مرئية للجميع
-               game.Players.LocalPlayer.Character:BreakJoints()
-               wait(0.1)
-               hum.Health = 0 -- Reset للـ Replication
-               wait(1)
-               hum:ApplyDescription(desc) -- تكرار للتأكيد
-           end
-       end
-   end,
+RefreshPlayers() -- Initial refresh
+
+-- [[ Mirror Appearance ]]
+Tabs.Mirror:AddButton({
+    Title = "Mirror Target Appearance (Full Copy)",
+    Callback = function()
+        if SelectedTarget == "" then Fluent:Notify({Title="Error",Content="Select a target first!"}) return end
+        local targetPlr = game.Players:FindFirstChild(SelectedTarget)
+        local lp = game.Players.LocalPlayer
+        if targetPlr and lp.Character then
+            local hum = lp.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                local desc = game.Players:GetHumanoidDescriptionFromUserId(targetPlr.UserId)
+                hum:ApplyDescription(desc)
+                -- Force replication / reset
+                task.delay(0.3, function()
+                    hum.Health = 0
+                end)
+                Fluent:Notify({Title="Success",Content="Appearance mirrored! (may need respawn)"})
+            end
+        end
+    end
 })
 
--- [[ 💀 ميزة القتل المضمونة (FIXED مع Server-Side Kill) ]] --
-local KillTab = Window:CreateTab("💀 Kill", 4483345998)
-KillTab:CreateButton({
-   Name = "Kill & Reset Target (موت الضحية)",
-   Callback = function()
-       local target = game.Players:FindFirstChild(SelectedTarget)
-       if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-           -- استخدام FireServer إذا كان هناك Remote Events للـ Damage، لكن هنا نستخدم Teleport تحت الماب مع Loop للتأكيد
-           local root = target.Character.HumanoidRootPart
-           spawn(function()
-               for i = 1, 10 do -- Loop لمنع السيرفر من التصحيح
-                   root.CFrame = CFrame.new(0, -5000, 0) * CFrame.Angles(math.rad(180), 0, 0)
-                   wait(0.05)
-               end
-           end)
-           -- إضافة Damage إذا كان Humanoid موجود
-           if target.Character:FindFirstChildOfClass("Humanoid") then
-               target.Character.Humanoid.Health = 0
-           end
-       end
-   end,
+-- [[ Kill ]]
+Tabs.Kill:AddButton({
+    Title = "Kill Target (Hard Drop)",
+    Callback = function()
+        if SelectedTarget == "" then Fluent:Notify({Title="Error",Content="Select a target!"}) return end
+        local target = game.Players:FindFirstChild(SelectedTarget)
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local root = target.Character.HumanoidRootPart
+            for i = 1, 15 do
+                root.CFrame = CFrame.new(0, -9999, 0)
+                task.wait(0.03)
+            end
+            if target.Character:FindFirstChildOfClass("Humanoid") then
+                target.Character.Humanoid.Health = 0
+            end
+            Fluent:Notify({Title="Success",Content="Target killed / dropped!"})
+        end
+    end
 })
 
--- [[ 🏠 ميزة تدمير البيوت (RE-FIXED مع Server Replication) ]] --
-local HouseTab = Window:CreateTab("🏠 Houses", 4483345998)
-HouseTab:CreateButton({
-   Name = "Wipe Target House (مسح بيته)",
-   Callback = function()
-       for _, v in pairs(workspace:GetDescendants()) do
-           if v:IsA("Model") and (string.lower(v.Name):find(string.lower(SelectedTarget)) or (v:FindFirstChild("Owner") and tostring(v.Owner.Value) == SelectedTarget)) then
-               -- للـ Replication: استخدام Destroy مع FireServer إذا كان هناك Remotes، لكن هنا نستخدم Loop Destroy
-               spawn(function()
-                   for _, part in pairs(v:GetDescendants()) do
-                       if part:IsA("BasePart") or part:IsA("Model") then
-                           part:Destroy()
-                       end
-                   end
-                   v:Destroy()
-               end)
-           end
-       end
-   end,
+-- [[ Wipe House ]]
+Tabs.Houses:AddButton({
+    Title = "Wipe Target's House",
+    Callback = function()
+        if SelectedTarget == "" then Fluent:Notify({Title="Error",Content="Select a target!"}) return end
+        local lowerName = string.lower(SelectedTarget)
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and (string.find(string.lower(obj.Name), lowerName) or (obj:FindFirstChild("Owner") and tostring(obj.Owner.Value) == SelectedTarget)) then
+                for _, part in pairs(obj:GetDescendants()) do
+                    if part:IsA("BasePart") or part:IsA("Model") then
+                        pcall(function() part:Destroy() end)
+                    end
+                end
+                pcall(function() obj:Destroy() end)
+            end
+        end
+        Fluent:Notify({Title="Success",Content="Target house wiped (if found)!"})
+    end
 })
 
--- [[ 🔗 ميزة الخطف والسحب (FIXED REPLICATION مع Heartbeat) ]] --
-local SeizeTab = Window:CreateTab("🔗 Seize", 4483345998)
+-- [[ Seize / Abduct ]]
 local Holding = false
-SeizeTab:CreateToggle({
-   Name = "Abduct Player (خطف)",
-   CurrentValue = false,
-   Callback = function(V)
-       Holding = V
-       local victim = game.Players:FindFirstChild(SelectedTarget)
-       local me = game.Players.LocalPlayer.Character
-       if victim and victim.Character and me and me:FindFirstChild("HumanoidRootPart") then
-           local connection
-           connection = game:GetService("RunService").Heartbeat:Connect(function()
-               if Holding and victim.Character and victim.Character:FindFirstChild("HumanoidRootPart") then
-                   -- Replication Fix: تحديث CFrame مع Velocity ليكون سلس ومرئي
-                   local victimRoot = victim.Character.HumanoidRootPart
-                   victimRoot.CFrame = me.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-                   victimRoot.Velocity = Vector3.new(0, 0, 0) -- منع الـ Glitch
-               else
-                   connection:Disconnect()
-               end
-           end)
-       end
-   end,
+Tabs.Seize:AddToggle("AbductToggle", {
+    Title = "Abduct / Hold Target",
+    Default = false,
+    Callback = function(Value)
+        Holding = Value
+        if not Value then return end
+        
+        local victim = game.Players:FindFirstChild(SelectedTarget)
+        local me = game.Players.LocalPlayer.Character
+        
+        if victim and victim.Character and me and me:FindFirstChild("HumanoidRootPart") then
+            Fluent:Notify({Title="Abduct",Content="Holding target... (toggle off to release)"})
+            
+            local conn
+            conn = game:GetService("RunService").Heartbeat:Connect(function()
+                if not Holding then conn:Disconnect() return end
+                if victim.Character and victim.Character:FindFirstChild("HumanoidRootPart") then
+                    local vRoot = victim.Character.HumanoidRootPart
+                    vRoot.CFrame = me.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3.5)
+                    vRoot.Velocity = Vector3.new()
+                end
+            end)
+        else
+            Fluent:Notify({Title="Error",Content="Target or your character not found!"})
+            Holding = false
+        end
+    end
 })
 
--- [[ ⚡ الطيران والسرعة (Stealth Mode مع Bypass) ]] --
-local MoveTab = Window:CreateTab("⚡ Movement", 4483345998)
-MoveTab:CreateSlider({
-   Name = "Speed",
-   Range = {16, 300},
-   Increment = 1,
-   CurrentValue = 16,
-   Callback = function(V)
-       local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-       if hum then
-           hum.WalkSpeed = V
-           -- Bypass: منع السيرفر من التعديل
-           hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-               hum.WalkSpeed = V
-           end)
-       end
-   end,
+-- [[ Movement ]]
+local currentSpeed = 16
+Tabs.Movement:AddSlider("WalkSpeed", {
+    Title = "Walk Speed",
+    Min = 16,
+    Max = 300,
+    Default = 16,
+    Rounding = 1,
+    Callback = function(Value)
+        currentSpeed = Value
+        local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = Value
+            hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+                hum.WalkSpeed = currentSpeed
+            end)
+        end
+    end
 })
 
-local Flying = false
-local FlyConnection
-MoveTab:CreateToggle({
-   Name = "Fly",
-   CurrentValue = false,
-   Callback = function(V)
-       Flying = V
-       local root = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-       if root then
-           if Flying then
-               local bv = Instance.new("BodyVelocity")
-               bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
-               bv.Velocity = Vector3.new(0, 0, 0)
-               bv.Parent = root
-               
-               local bg = Instance.new("BodyGyro")
-               bg.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
-               bg.P = 1e4
-               bg.Parent = root
-               
-               FlyConnection = game:GetService("RunService").RenderStepped:Connect(function()
-                   if Flying then
-                       local cam = workspace.CurrentCamera
-                       local moveDir = Vector3.new(0, 0, 0)
-                       if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + cam.CFrame.LookVector end
-                       if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - cam.CFrame.LookVector end
-                       if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - cam.CFrame.RightVector end
-                       if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + cam.CFrame.RightVector end
-                       if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0,1,0) end
-                       if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then moveDir = moveDir - Vector3.new(0,1,0) end
-                       
-                       if moveDir.Magnitude > 0 then
-                           moveDir = moveDir.Unit * 50 -- سرعة الطيران
-                       end
-                       bv.Velocity = moveDir
-                       bg.CFrame = cam.CFrame
-                   end
-               end)
-           else
-               if FlyConnection then FlyConnection:Disconnect() end
-               if root:FindFirstChild("BodyVelocity") then root.BodyVelocity:Destroy() end
-               if root:FindFirstChild("BodyGyro") then root.BodyGyro:Destroy() end
-           end
-       end
-   end,
+local FlyEnabled = false
+local FlySpeed = 50
+Tabs.Movement:AddToggle("FlyToggle", {
+    Title = "Fly (WASD + Space/Ctrl)",
+    Default = false,
+    Callback = function(v)
+        FlyEnabled = v
+        local root = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        
+        if v then
+            local bv = Instance.new("BodyVelocity", root)
+            bv.MaxForce = Vector3.new(1e9,1e9,1e9)
+            bv.Velocity = Vector3.new()
+            
+            local bg = Instance.new("BodyGyro", root)
+            bg.MaxTorque = Vector3.new(1e9,1e9,1e9)
+            bg.P = 9000
+            
+            local conn = game:GetService("RunService").RenderStepped:Connect(function()
+                if not FlyEnabled then conn:Disconnect() bv:Destroy() bg:Destroy() return end
+                
+                local cam = workspace.CurrentCamera
+                local move = Vector3.new()
+                local UIS = game:GetService("UserInputService")
+                
+                if UIS:IsKeyDown(Enum.KeyCode.W) then move += cam.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then move -= cam.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then move -= cam.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then move += cam.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.Space) then move += Vector3.new(0,1,0) end
+                if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move -= Vector3.new(0,1,0) end
+                
+                bv.Velocity = move.Unit * FlySpeed * (move.Magnitude > 0 and 1 or 0)
+                bg.CFrame = cam.CFrame
+            end)
+        end
+    end
 })
 
--- [[ 🚀 ميزة السكرت - Instant Steal (محسنة) ]] --
-local StealTab = Window:CreateTab("🚀 Instant Steal", 4483345998)
-
-StealTab:CreateButton({
-   Name = "Get Secret & Return",
-   Callback = function()
-       local lp = game.Players.LocalPlayer.Character
-       if lp and lp:FindFirstChild("HumanoidRootPart") then
-           local oldCFrame = lp.HumanoidRootPart.CFrame
-           -- غير الإحداثيات حسب مكان الـ Secret في اللعبة (مثال افتراضي)
-           lp.HumanoidRootPart.CFrame = CFrame.new(0, 150, -2000)
-           wait(0.5) -- زيادة الوقت للتأكيد على الـ Touch
-           
-           -- Fire all Touch Interests للـ Replication
-           for _, v in pairs(workspace:GetDescendants()) do
-               if v:IsA("BasePart") and v:FindFirstChild("TouchTransmitter") then
-                   firetouchinterest(lp.HumanoidRootPart, v, 0)
-                   wait(0.01)
-                   firetouchinterest(lp.HumanoidRootPart, v, 1)
-               end
-           end
-           
-           wait(0.2)
-           lp.HumanoidRootPart.CFrame = oldCFrame
-       end
-   end,
+-- [[ Instant Steal (change coords to your game secret location) ]]
+Tabs.Steal:AddButton({
+    Title = "Instant Steal Secret & Return",
+    Callback = function()
+        local lpChar = game.Players.LocalPlayer.Character
+        if not lpChar or not lpChar:FindFirstChild("HumanoidRootPart") then return end
+        
+        local oldCF = lpChar.HumanoidRootPart.CFrame
+        lpChar.HumanoidRootPart.CFrame = CFrame.new(0, 150, -2000) -- ← غير الإحداثيات دي حسب مكان الـ secret في اللعبة
+        
+        task.wait(0.6)
+        
+        for _, part in pairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") and part:FindFirstChild("TouchTransmitter") then
+                firetouchinterest(lpChar.HumanoidRootPart, part, 0)
+                task.wait(0.02)
+                firetouchinterest(lpChar.HumanoidRootPart, part, 1)
+            end
+        end
+        
+        task.wait(0.3)
+        lpChar.HumanoidRootPart.CFrame = oldCF
+        Fluent:Notify({Title="Done",Content="Attempted instant steal!"})
+    end
 })
 
--- [[ 🛠️ قسم الإعدادات والإصلاحات ]] --
-local SettingsTab = Window:CreateTab("🛠️ Fixes", 4483345998)
-SettingsTab:CreateButton({
-   Name = "Fix Lag / Anti-Kick (إعادة تشغيل)",
-   Callback = function()
-       SecureBypass() -- إعادة تفعيل الحماية
-   end,
+-- [[ Fixes ]]
+Tabs.Fixes:AddButton({
+    Title = "Re-Apply Anti-Kick",
+    Callback = SecureBypass
 })
 
-Rayfield:Notify({Title = "ZENO HUB V12", Content = "All Features Fixed & Replicated!", Duration = 5})
+Fluent:Notify({
+    Title = "ZENO HUB Legendary",
+    Content = "Loaded successfully with Fluent UI! Enjoy 🚀",
+    Duration = 8
+})
