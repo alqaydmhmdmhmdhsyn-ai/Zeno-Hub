@@ -1,64 +1,105 @@
--- [[ ZENO HUB: FINAL REPAIR ]] --
+-- [[ ZENO HUB - Metro Life City RP Edition 2026 ]] --
+-- مع Minimize + Draggable + أوامر مخصصة للماب
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("🌪️ ZENO: PLAYER CONTROL", "BloodTheme")
+local Window = Library.CreateLib("🌪️ ZENO: METRO LIFE ADMIN", "BloodTheme")
 
--- [[ 👥 قسم التحكم في اللاعبين ]] --
-local Tab1 = Window:NewTab("Players Control")
-local Section1 = Tab1:NewSection("Teleport & Move")
+local isMinimized = false
+local toggleButton = nil
 
-local selectedPlayer = ""
+local function toggleGUI()
+    isMinimized = not isMinimized
+    if isMinimized then
+        game:GetService("CoreGui"):FindFirstChild("KavoUI", true).Enabled = false
+        
+        if not toggleButton then
+            local sg = Instance.new("ScreenGui", game.CoreGui)
+            sg.Name = "ZenoToggleMetro"
+            toggleButton = Instance.new("TextButton")
+            toggleButton.Size = UDim2.new(0, 60, 0, 60)
+            toggleButton.Position = UDim2.new(0.01, 0, 0.1, 0)
+            toggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            toggleButton.Text = "ZENO\nMetro"
+            toggleButton.TextColor3 = Color3.fromRGB(255, 80, 80)
+            toggleButton.Font = Enum.Font.GothamBlack
+            toggleButton.TextSize = 16
+            toggleButton.Parent = sg
+            toggleButton.MouseButton1Click:Connect(toggleGUI)
+        end
+        toggleButton.Visible = true
+    else
+        if game:GetService("CoreGui"):FindFirstChild("KavoUI", true) then
+            game:GetService("CoreGui"):FindFirstChild("KavoUI", true).Enabled = true
+        end
+        if toggleButton then toggleButton.Visible = false end
+    end
+end
 
-Section1:NewDropdown("Select Player", "اختر الضحية", {}, function(v)
-    selectedPlayer = v
+-- ================== Players Control ==================
+local TabPlayers = Window:NewTab("لاعبين")
+local SecPlayers = TabPlayers:NewSection("Teleport & Control")
+
+local selected = ""
+local dd = SecPlayers:NewDropdown("اختر لاعب", "Select Victim", {}, function(v) selected = v end)
+
+SecPlayers:NewButton("تحديث القائمة (Refresh)", "اضغط لو اللاعبين اختفوا", function()
+    local names = {}
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        table.insert(names, plr.Name)
+    end
+    dd:Refresh(names, true)
 end)
 
-Section1:NewButton("Teleport Out (طرده)", "نقله للسماء", function()
-    local p = game.Players:FindFirstChild(selectedPlayer)
-    if p and p.Character then
-        p.Character.HumanoidRootPart.CFrame = CFrame.new(0, 1000, 0)
+SecPlayers:NewButton("جيبه عندي (Bring to Me)", "ييجي جنبك", function()
+    local target = game.Players:FindFirstChild(selected)
+    local me = game.Players.LocalPlayer
+    if target and target.Character and me.Character then
+        target.Character.HumanoidRootPart.CFrame = me.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -4)
     end
 end)
 
-Section1:NewButton("Bring to Me (هاته عندي)", "سحب اللاعب", function()
-    local p = game.Players:FindFirstChild(selectedPlayer)
-    if p and p.Character then
-        p.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+SecPlayers:NewButton("طرده للسما (TP Out)", "يطير فوق", function()
+    local target = game.Players:FindFirstChild(selected)
+    if target and target.Character then
+        target.Character.HumanoidRootPart.CFrame = CFrame.new(0, 1500, 0)
     end
 end)
 
-Section1:NewButton("Refresh List (تحديث القائمة)", "اضغط هنا لو القائمة اختفت", function()
-    -- تحديث يدوي للأسماء
-    pcall(function()
-        local names = {}
-        for _,v in pairs(game.Players:GetPlayers()) do table.insert(names, v.Name) end
-        -- تحديث الدروب داون
-    end)
+SecPlayers:NewButton("قتله (Kill)", "يموت فورًا", function()
+    local target = game.Players:FindFirstChild(selected)
+    if target and target.Character and target.Character:FindFirstChild("Humanoid") then
+        target.Character.Humanoid.Health = 0
+    end
 end)
 
--- [[ 🏠 قسم البيوت - إصلاح القائمة الجانبية ]] --
-local Tab2 = Window:NewTab("House Management")
-local Section2 = Tab2:NewSection("Destroy & Reset")
+-- ================== House & Cars ==================
+local TabHouse = Window:NewTab("بيوت وسيارات")
+local SecHouse = TabHouse:NewSection("تدمير/تحكم")
 
-Section2:NewButton("Ghost House (إخفاء البيت)", "بيختفي من قدامك", function()
-    for _,v in pairs(workspace:GetDescendants()) do
-        if v:IsA("Model") and (v.Name:find("House") or v:FindFirstChild("Owner")) then
+SecHouse:NewButton("إخفاء/تدمير كل البيوت (Ghost All Houses)", "يختفي كل البيوت", function()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and (obj.Name:lower():find("house") or obj:FindFirstChild("Owner") or obj.Name:find("Plot")) then
+            obj:Destroy()
+        end
+    end
+end)
+
+SecHouse:NewButton("تدمير كل السيارات القريبة", "Clean Cars", function()
+    for _, v in pairs(workspace.Vehicles:GetChildren()) do  -- غالبًا Vehicles Folder
+        if v:IsA("Model") then
             v:Destroy()
         end
     end
 end)
 
-Section2:NewButton("Kill All (قتل الجميع)", "تجربة القوة", function()
-    for _,v in pairs(game.Players:GetPlayers()) do
-        if v ~= game.Players.LocalPlayer and v.Character then
-            v.Character.Humanoid.Health = 0
-        end
-    end
-end)
+-- ================== Extra ==================
+local TabExtra = Window:NewTab("إكسترا")
+local SecExtra = TabExtra:NewSection("أدوات إضافية")
 
--- [[ 🛠️ أوامر إضافية ]] --
-local Tab3 = Window:NewTab("Extra")
-local Section3 = Tab3:NewSection("Server Fun")
+SecExtra:NewButton("تصغير الواجهة (Minimize)", "إخفاء الـ Panel مؤقتًا", toggleGUI)
 
-Section3:NewButton("Infinite Yield", "فتح الأدمن الشامل", function()
+SecExtra:NewButton("Infinite Yield (Admin شامل)", "فتح أوامر قوية جدًا", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
+
+print("ZENO Metro Life Admin Loaded! → استخدم زر Minimize عشان تخفي/ترجع الواجهة")
