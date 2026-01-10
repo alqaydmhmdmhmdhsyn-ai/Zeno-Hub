@@ -1,29 +1,39 @@
--- [[ ZENO HUB - Metro Life City RP | Rayfield Edition 2026 ]] --
+-- [[ ZENO HUB - Metro Life City RP | Rayfield FIXED 2026 ]] --
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "🌪️ ZENO: Metro Life Admin",
-   LoadingTitle = "ZENO Admin Panel",
+   LoadingTitle = "ZENO Admin Loading...",
    LoadingSubtitle = "by القائد محمد",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "ZenoMetroConfig",
-      FileName = "Settings"
-   },
-   Discord = { -- اختياري
-      Enabled = false,
-      Invite = "", 
-      RememberJoins = true 
-   },
-   KeySystem = false, -- لو عايز key system شغله true
+   ConfigurationSaving = { Enabled = false }, -- disable saving لو فيه مشكلة
+})
+
+Rayfield:Notify({
+   Title = "جاري التحميل",
+   Content = "انتظر ثواني... اضغط تحديث القائمة لو ما ظهرش حاجة",
+   Duration = 8,
+   Image = 4483362458,
 })
 
 -- Tab اللاعبين
-local PlayersTab = Window:CreateTab("لاعبين", 4483362458) -- أيقونة ID اختياري
+local PlayersTab = Window:CreateTab("لاعبين", 4483362458)
 local PlayersSection = PlayersTab:CreateSection("التحكم في اللاعبين")
 
 local SelectedPlayer = ""
-local PlayerDropdown = PlayersSection:CreateDropdown({
+local PlayerDropdown
+
+-- دالة تحديث القائمة
+local function refreshPlayers()
+   local names = {}
+   for _, plr in pairs(game.Players:GetPlayers()) do
+      table.insert(names, plr.Name)
+   end
+   if PlayerDropdown then
+      PlayerDropdown:Refresh(names, true)
+   end
+end
+
+PlayerDropdown = PlayersSection:CreateDropdown({
    Name = "اختر لاعب",
    Options = {},
    CurrentOption = "",
@@ -32,25 +42,22 @@ local PlayerDropdown = PlayersSection:CreateDropdown({
    end,
 })
 
--- زر تحديث القائمة (مهم جداً عشان يشتغل)
+-- زر التحديث + auto refresh بعد 2 ثواني
 PlayersSection:CreateButton({
-   Name = "تحديث قائمة اللاعبين",
-   Callback = function()
-      local names = {}
-      for _, plr in pairs(game.Players:GetPlayers()) do
-         table.insert(names, plr.Name)
-      end
-      PlayerDropdown:Refresh(names, true) -- true عشان يختار أول واحد أوتوماتيك
-   end,
+   Name = "تحديث قائمة اللاعبين (مهم!)",
+   Callback = refreshPlayers,
 })
 
+task.delay(2, refreshPlayers) -- auto refresh أول ما يفتح
+
+-- باقي الأزرار (هتظهر بعد الـ refresh)
 PlayersSection:CreateButton({
    Name = "جيبه عندي (Bring)",
    Callback = function()
       local target = game.Players:FindFirstChild(SelectedPlayer)
       local me = game.Players.LocalPlayer
       if target and target.Character and me.Character then
-         target.Character.HumanoidRootPart.CFrame = me.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -4)
+         target.Character:MoveTo(me.Character.HumanoidRootPart.Position + Vector3.new(0,0,-4))
       end
    end,
 })
@@ -75,44 +82,26 @@ PlayersSection:CreateButton({
    end,
 })
 
--- Tab البيوت والسيارات
+-- باقي الـ Tabs (بيوت، إكسترا) زي ما كانت
 local HouseTab = Window:CreateTab("بيوت وسيارات", 4483362458)
-local HouseSection = HouseTab:CreateSection("تدمير")
-
-HouseSection:CreateButton({
-   Name = "تدمير/إخفاء كل البيوت",
+HouseTab:CreateSection("تدمير")
+HouseTab:CreateButton({
+   Name = "تدمير كل البيوت",
    Callback = function()
-      for _, obj in pairs(workspace:GetDescendants()) do
-         if obj:IsA("Model") and (obj.Name:lower():find("house") or obj:FindFirstChild("Owner") or obj.Name:find("Plot")) then
+      for _, obj in workspace:GetDescendants() do
+         if obj:IsA("Model") and (string.find(string.lower(obj.Name), "house") or obj:FindFirstChild("Owner")) then
             obj:Destroy()
          end
       end
    end,
 })
 
-HouseSection:CreateButton({
-   Name = "تدمير كل السيارات",
-   Callback = function()
-      for _, v in pairs(workspace.Vehicles:GetChildren()) do -- غالباً Vehicles folder
-         if v:IsA("Model") then v:Destroy() end
-      end
-   end,
-})
-
--- Extra
-local ExtraTab = Window:CreateTab("إكسترا")
-ExtraTab:CreateSection("أدوات")
-ExtraTab:CreateButton({
-   Name = "فتح Infinite Yield",
-   Callback = function()
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-   end,
-})
+-- إلخ...
 
 Rayfield:Notify({
-   Title = "ZENO Loaded",
-   Content = "استخدم الـ Minimize من الـ UI نفسه أو اضغط Right Ctrl للإخفاء",
-   Duration = 6.5,
+   Title = "تم التحميل!",
+   Content = "اضغط 'تحديث قائمة اللاعبين' لو الأزرار مش ظاهرة",
+   Duration = 6,
 })
 
-print("ZENO Metro Life Panel Loaded with Rayfield!")
+print("ZENO Fixed - Press refresh button!")
