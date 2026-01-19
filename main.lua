@@ -1,107 +1,87 @@
--- [[ ZENO HUB: THE ULTIMATE SHINDO LIFE SCRIPT ]] --
--- Optimized for: Mobile, PC, Delta, Hydrogen, Fluxus
--- No Key System | Professional UI
+-- [[ ZENO HUB V2 - PREMIUM VERSION ]] --
+-- الواجهة دي احترافية وتدعم السحب والإخفاء (Mobile Friendly)
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("ZENO HUB | SHINDO LIFE", "Midnight")
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local ToggleBtn = Instance.new("TextButton") -- الزر العائم
+local Title = Instance.new("TextLabel")
+local Content = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
 
--- [ 1. القائمة الرئيسية والتطوير الذكي ]
-local MainTab = Window:NewTab("التطوير الذكي (Farm)")
-local FarmSection = MainTab:NewSection("Auto Farm Systems")
+-- إعدادات الشاشة والزر العائم
+ScreenGui.Parent = game.CoreGui
+ToggleBtn.Name = "ZenoToggle"
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+ToggleBtn.Position = UDim2.new(0, 10, 0, 150)
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+ToggleBtn.Text = "ZENO"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.Draggable = true -- تقدر تحركه في أي مكان
 
-FarmSection:NewToggle("تطوير المهام (Fast Quest)", "يقوم بقبول المهمات وقتل الأعداء تلقائياً", function(state)
-    _G.AutoFarm = state
-    spawn(function()
-        while _G.AutoFarm do
-            task.wait(0.5)
-            -- كود ذكي للانتقال وقبول المهمات وقتل الأعداء
-            pcall(function()
-                if not game.Players.LocalPlayer.Character:FindFirstChild("Task") then
-                    -- جلب مهمة تلقائياً
-                end
-            end)
-        end
-    end)
+-- إعدادات القائمة الرئيسية
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 350, 0, 400)
+MainFrame.Visible = false -- تبدأ مخفية
+
+-- وظيفة الفتح والقفل بالزر العائم
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
 end)
 
-FarmSection:NewToggle("تطوير الخشب (Log Farm)", "أسرع وسيلة لزيادة اللفل", function(state)
-    _G.LogFarm = state
+-- إضافة العنوان والمميزات
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "ZENO HUB - SHINDO LIFE"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+Content.Parent = MainFrame
+Content.Position = UDim2.new(0, 0, 0, 45)
+Content.Size = UDim2.new(1, 0, 1, -45)
+UIListLayout.Parent = Content
+
+-- [ وظيفة إضافة الأزرار ]
+local function AddButton(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = Content
+    btn.Size = UDim2.new(0.9, 0, 0, 40)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- [[ المميزات الشغالة فعلياً ]]
+
+AddButton("تفعيل الضرب التلقائي (Fast Log)", function()
+    _G.LogFarm = true
     spawn(function()
         while _G.LogFarm do
-            task.wait(0.01)
-            -- هجوم سريع جداً على الخشب بدون Cooldown
+            task.wait(0.1)
             local args = {[1] = "Combat", [2] = "Log"}
             game:GetService("Players").LocalPlayer.startevent:FireServer(unpack(args))
         end
     end)
 end)
 
--- [ 2. نظام اللفات الأسطوري (Bloodline System) ]
-local SpinTab = Window:NewTab("اللفات (Spins)")
-local SpinSection = SpinTab:NewSection("Auto Bloodline / Element")
-
-local TargetBL = "None"
-SpinSection:NewTextBox("اسم الـ Bloodline المطلوب", "اكتب الاسم بدقة (مثلاً: Raion-Gaigan)", function(txt)
-    TargetBL = txt
+AddButton("لف تلقائي (Auto Spin)", function()
+    -- الكود ده بينادي على سيرفر اللعبة عشان يلف فعلياً
+    game:GetService("Players").LocalPlayer.startevent:FireServer("Spin", "Bloodline")
 end)
 
-SpinSection:NewToggle("بدء اللف التلقائي (Safe Spin)", "سيتوقف فوراً عند إيجاد طلبك", function(state)
-    _G.AutoSpin = state
-    while _G.AutoSpin do
-        task.wait(0.3)
-        -- هنا كود فحص الـ Bloodline الحالي ومقارنته بالهدف
-    end
-end)
-
--- [ 3. مميزات أسطورية إضافية (Exclusive Features) ]
-local ExtraTab = Window:NewTab("مميزات خرافية")
-local ExtraSection = ExtraTab:NewSection("قوى إضافية")
-
-ExtraSection:NewToggle("إنفينيتي تشاكرا (Infinite Chakra)", "لن تنتهي الطاقة لديك أبداً", function(state)
-    _G.InfChakra = state
-    spawn(function()
-        while _G.InfChakra do
-            task.wait(0.1)
+AddButton("تشاكرا لا نهائية", function()
+    game:GetService("RunService").RenderStepped:Connect(function()
+        pcall(function()
             game.Players.LocalPlayer.Character.Statz.Chakra.Current.Value = game.Players.LocalPlayer.Character.Statz.Chakra.Max.Value
-        end
+        end)
     end)
 end)
 
-ExtraSection:NewToggle("هجوم سريع (Fast Attack)", "يضاعف سرعة الضربات 10 مرات", function(state)
-    _G.FastAttack = state
-end)
-
-ExtraSection:NewButton("كشف اللفائف (Scroll ESP)", "يظهر لك أماكن اللفائف النادرة خلف الجدران", function()
-    -- كود الـ ESP الاحترافي
-    print("Zeno Hub: جاري تتبع اللفائف...")
-end)
-
--- [ 4. الانتقالات والسفر (World TP) ]
-local WorldTab = Window:NewTab("انتقالات العالم")
-local TPSection = WorldTab:NewSection("السفر الفوري بين القرى")
-
-local Villages = {"Ember", "Leaf", "Cloud", "Sand", "Rain"}
-for _, v in pairs(Villages) do
-    TPSection:NewButton("انتقال إلى: " .. v, "سفر سريع", function()
-        -- كود الانتقال بين السيرفرات والقرى
-    end)
-end
-
--- [ 5. قسم الحماية الفائقة (Security) ]
-local SecTab = Window:NewTab("الحماية")
-local SecSection = SecTab:NewSection("Anti-Ban & Privacy")
-
-SecSection:NewButton("تفعيل مضاد الطرد (Anti-Kick)", "حماية من نظام اللعبة", function()
-    local mt = getrawmetatable(game)
-    setreadonly(mt, false)
-    local old = mt.__namecall
-    mt.__namecall = newcclosure(function(self, ...)
-        if getnamecallmethod() == "Kick" then return nil end
-        return old(self, ...)
-    end)
-    print("Zeno Hub: تم تفعيل الحماية القصوى!")
-end)
-
-SecSection:NewKeybind("إخفاء واجهة Zeno", "اضغط الزر لإخفاء القائمة", Enum.KeyCode.RightControl, function()
-    Library:ToggleUI()
+AddButton("إيقاف كل الميزات", function()
+    _G.LogFarm = false
+    print("Zeno Hub: تم الإيقاف")
 end)
